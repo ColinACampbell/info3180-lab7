@@ -5,9 +5,14 @@ Werkzeug Documentation:  https://werkzeug.palletsprojects.com/
 This file creates your application.
 """
 
+from crypt import methods
 from app import app
 from flask import render_template, request, jsonify, send_file
 import os
+from werkzeug.utils import secure_filename
+
+
+from app.forms import UploadForm
 
 
 ###
@@ -19,24 +24,43 @@ def index():
     return jsonify(message="This is the beginning of our API")
 
 
-###
-# The functions below should be applicable to all Flask apps.
-###
+@app.route('/api/upload', methods=['POST'])
+def upload():
+    form = UploadForm()
+    if form.validate_on_submit():
+        description = form.description.data
+        photo = form.photo.data
+
+        file_path = os.path.join(
+            app.config['UPLOAD_FOLDER'], secure_filename(photo.filename))
+        photo.save(file_path)
+        return {
+            "filename": file_path,
+            "description": description
+        }
+    else:
+        # flash the errors here
+        return {
+            "errors": form_errors()
+        }
 
 # Here we define a function to collect form errors from Flask-WTF
 # which we can later use
+
+
 def form_errors(form):
     error_messages = []
     """Collects form errors"""
     for field, errors in form.errors.items():
         for error in errors:
             message = u"Error in the %s field - %s" % (
-                    getattr(form, field).label.text,
-                    error
-                )
+                getattr(form, field).label.text,
+                error
+            )
             error_messages.append(message)
 
     return error_messages
+
 
 @app.route('/<file_name>.txt')
 def send_text_file(file_name):
@@ -64,4 +88,4 @@ def page_not_found(error):
 
 
 if __name__ == '__main__':
-    app.run(debug=True,host="0.0.0.0",port="8080")
+    app.run(debug=True, host="0.0.0.0", port="8080")
