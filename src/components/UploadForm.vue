@@ -1,8 +1,8 @@
 <template>
-  <form @submit.prevent="uploadPhoto">
-      <input type="text"/>
-      <input type="file"/>
-      <input type="submit"/>
+  <form @submit.prevent="uploadPhoto" id="uploadForm">
+    <input type="text" name="photo"/>
+    <input type="file" name="description"/>
+    <input type="submit" />
   </form>
 </template>
 <script>
@@ -12,8 +12,18 @@ export default {
   },
   methods: {
     uploadPhoto() {
+
+    
+      let uploadForm = document.getElementById("uploadForm");
+
+      console.log(uploadForm)
+      let form_data = new FormData(uploadForm);
+
+      console.log(form_data)
+
       fetch("/api/upload", {
         method: "POST",
+        body:form_data
       })
         .then(function (response) {
           return response.json();

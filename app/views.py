@@ -10,7 +10,7 @@ from app import app
 from flask import render_template, request, jsonify, send_file
 import os
 from werkzeug.utils import secure_filename
-
+from flask_wtf.csrf import generate_csrf
 
 from app.forms import UploadForm
 
@@ -41,8 +41,13 @@ def upload():
     else:
         # flash the errors here
         return {
-            "errors": form_errors()
+            "errors": form_errors(form=form)
         }
+
+
+@app.route('/api/csrf-token', methods=['GET'])
+def get_csrf():
+    return jsonify({'csrf_token': generate_csrf()})
 
 # Here we define a function to collect form errors from Flask-WTF
 # which we can later use
