@@ -1,9 +1,35 @@
 <template>
-  <form @submit.prevent="uploadPhoto" id="uploadForm">
-    <input type="text" name="photo" />
-    <input type="file" name="description" />
-    <input type="submit" />
-  </form>
+  <div class="container">
+    <form @submit.prevent="uploadPhoto" id="uploadForm" class="row">
+      <div class="col col-lg-6 col-md-6 col-sm-12">
+        <h1>Upload Photo</h1>
+      </div>
+      <div  v-if="uploadSuccess" class="col col-lg-6 col-md-6 col-sm-12 alert alert-success">File Upload Successful</div>
+
+      <div class="form-group col col-lg-6 col-md-6 col-sm-12">
+        <label for="exampleInputPassword1">Photo</label>
+        <input type="file" name="photo" class="form-control" id="photo" />
+      </div>
+
+      <div
+        class="form-group col col-lg-6 col-md-6 col-sm-12"
+        style="margin-bottom: 20px"
+      >
+        <label for="Description">Description</label>
+        <textarea
+          type="text"
+          name="description"
+          class="form-control"
+          id="Description"
+          placeholder="Description"
+        ></textarea>
+      </div>
+      <br />
+      <div class="form-group col col-lg-6 col-md-6 col-sm-12">
+        <button type="submit" class="btn btn-primary">Upload Photo</button>
+      </div>
+    </form>
+  </div>
 </template>
 <script>
 export default {
@@ -13,6 +39,7 @@ export default {
   data: () => {
     return {
       csrf_token: "",
+      uploadSuccess:false
     };
   },
   methods: {
@@ -30,8 +57,8 @@ export default {
 
       console.log(uploadForm);
       let form_data = new FormData(uploadForm);
+      const self = this
 
-      console.log(form_data);
 
       fetch("/api/upload", {
         method: "POST",
@@ -45,7 +72,11 @@ export default {
         })
         .then(function (data) {
           // display a success message
-          console.log(data);
+          if ('errors' in data) 
+            console.log(data)
+          else {
+            self.uploadSuccess = true
+          }
         })
         .catch(function (error) {
           console.log(error);
@@ -54,3 +85,13 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+#uploadForm {
+  display: flex;
+  height: 400px;
+  flex-direction: column;
+  padding: 30px;
+  align-items: center;
+}
+</style>

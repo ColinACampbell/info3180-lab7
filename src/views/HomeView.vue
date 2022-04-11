@@ -1,5 +1,4 @@
 <script>
-import UploadForm from "./../components/UploadForm.vue";
 export default {
   data() {
     return {
@@ -7,15 +6,12 @@ export default {
     };
   },
 
-  components: {UploadForm},
 };
 </script>
 
 <template>
   <div class="container">
     <div class="text-center">
-      <UploadForm></UploadForm>
-
       <img
         alt="Vue logo"
         class="logo"
