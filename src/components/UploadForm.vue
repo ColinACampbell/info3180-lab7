@@ -4,8 +4,20 @@
       <div class="col col-lg-6 col-md-6 col-sm-12">
         <h1>Upload Photo</h1>
       </div>
-      <div  v-if="uploadSuccess" class="col col-lg-6 col-md-6 col-sm-12 alert alert-success">File Upload Successful</div>
-
+      <div
+        v-if="uploadSuccess"
+        class="col col-lg-6 col-md-6 col-sm-12 alert alert-success"
+      >
+        File Upload Successful
+      </div>
+      <div
+        v-if="uploadError"
+        class="col col-lg-6 col-md-6 col-sm-12 alert alert-danger"
+      >
+        <ul>
+          <li v-for="error in formErrors" :key="error">{{ error }}</li>
+        </ul>
+      </div>
       <div class="form-group col col-lg-6 col-md-6 col-sm-12">
         <label for="exampleInputPassword1">Photo</label>
         <input type="file" name="photo" class="form-control" id="photo" />
@@ -39,7 +51,9 @@ export default {
   data: () => {
     return {
       csrf_token: "",
-      uploadSuccess:false
+      uploadSuccess: false,
+      formErrors: [],
+      uploadError: false,
     };
   },
   methods: {
@@ -57,8 +71,7 @@ export default {
 
       console.log(uploadForm);
       let form_data = new FormData(uploadForm);
-      const self = this
-
+      const self = this;
 
       fetch("/api/upload", {
         method: "POST",
@@ -72,10 +85,14 @@ export default {
         })
         .then(function (data) {
           // display a success message
-          if ('errors' in data) 
-            console.log(data)
-          else {
-            self.uploadSuccess = true
+          console.log(data);
+          if ("errors" in data) {
+            self.uploadError = true;
+            self.uploadSuccess = false;
+            self.formErrors = [...data.errors];
+          } else {
+            self.uploadError = false;
+            self.uploadSuccess = true;
           }
         })
         .catch(function (error) {
@@ -89,7 +106,7 @@ export default {
 <style scoped>
 #uploadForm {
   display: flex;
-  height: 400px;
+  min-height: 400px;
   flex-direction: column;
   padding: 30px;
   align-items: center;
